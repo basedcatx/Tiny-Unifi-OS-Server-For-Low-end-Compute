@@ -68,12 +68,9 @@ It detects the machine state first:
 
 ## Fresh install requirements
 
-The repo automates **everything that was learned the hard way**, but it cannot
-invent the vendor payload. On a genuinely fresh VPS you need one of:
-
 1. **`uosserver-payload-v5.1.42.tar.gz`** — the host-side binaries from a
    working box (`/var/lib/uosserver/bin`, systemd units, config templates).
-   ~13 MB. Shipped alongside this repo.
+ 
 2. **The container image** — `docker.io/library/uosserver:c9603dec9010`,
    **1.92 GB**. Save it from a working box:
    ```bash
@@ -92,18 +89,6 @@ sudo ./scripts/bootstrap.sh \
 
 ---
 
-## Layout
-
-```
-docs/DIAGNOSIS.md   the real root cause + every dead end (read this)
-docs/TUNING.md      every knob, with values for 1/2/4 GB
-scripts/bootstrap.sh      fresh VPS -> working controller, idempotent
-scripts/repair.sh         re-apply tuning after a container recreate
-scripts/free-resources.sh stop/mask the CPU and RAM thieves
-scripts/verify.sh         ports, UI, API, health, thread counts
-scripts/pids-guard.sh     keeps pids.max raised (it resets on container start)
-install/                  systemd units, config templates, port map
-```
 
 ## Self-healing
 
@@ -114,19 +99,3 @@ Two host timers keep the box healthy without intervention:
 | `uosserver-pids.timer`   | 30 s     | re-raises container `pids.max` to 2048 — **it resets to 363 on every container start, not just recreate** |
 | `uosserver-repair.timer` | 5 min    | re-applies the threadpool trim, heap/memory caps and drop-ins if the overlay was wiped                    |
 
-They are cheap (the pids guard only reads a glob) and log to the journal.
-
----
-
-## What was disabled, and why
-
-| Service                                                                        | Why it is off                                                                                    |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `snap.oracle-cloud-agent`                                                      | ~68 % of a vCPU between `gomon`, `agent`, `oci-wlp`, `runcommand`. Not needed for the controller |
-| `apache2` (host)                                                               | 55 idle threads; the container publishes its own nginx                                           |
-| `ulp-go`, `ucs-agent`, `unifi-directory`, `uid-agent`, `unifi-identity-update` | UniFi OS identity/directory apps. Not required by the Network Application                        |
-| `fwupd`, `iscsid`, `ModemManager`, `rpcbind`, `apt-daily.*`                    | unused on a cloud VM                                                                             |
-| `zram`                                                                         | could not allocate on this instance                                                              |
-
-Re-enable any of them with `systemctl unmask <unit> && systemctl enable --now <unit>`
-if you need the feature back.
