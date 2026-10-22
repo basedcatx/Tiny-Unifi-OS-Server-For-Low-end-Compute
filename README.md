@@ -58,15 +58,11 @@ It detects the machine state first:
 
 | RAM                  | Verdict                                                |
 | -------------------- | ------------------------------------------------------ |
-| 512 MB               | will not work. Do not try.                             |
+| 512 MB               | Worth the try..............                            |
 | **1 GB + 2 GB swap** | **works** — this repo. Slow but functional             |
 | 2 GB                 | comfortable, use the looser values in `docs/TUNING.md` |
 | 4 GB                 | drop all the caps, stock-ish settings will run         |
 
-UniFi officially wants 2 GB. 1 GB is a deliberate, tuned compromise: the UI
-is usable, the controller runs, but expect slow page loads and long restarts
-(this box has high hypervisor steal — load average went from 15.75 to ~2
-after tuning).
 
 ---
 
