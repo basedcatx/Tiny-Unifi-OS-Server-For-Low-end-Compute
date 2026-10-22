@@ -1,0 +1,7 @@
+[Unit]
+Description=Raise UniFi OS Server container pids.max
+After=uosserver.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uosserver-pids.sh

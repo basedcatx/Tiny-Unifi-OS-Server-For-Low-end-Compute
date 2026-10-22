@@ -1,0 +1,19 @@
+[Unit]
+Description=UniFi OS Server Service
+After=network.target user-runtime-dir@1002.service uosserver-updater.service
+Wants=user-runtime-dir@1002.service uosserver-updater.service
+
+[Service]
+Type=simple
+ExecStart=/var/lib/uosserver/bin/uosserver-service
+WorkingDirectory=/var/lib/uosserver
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=123
+StartLimitInterval=60
+StartLimitBurst=3
+User=uosserver
+Group=uosserver
+
+[Install]
+WantedBy=multi-user.target

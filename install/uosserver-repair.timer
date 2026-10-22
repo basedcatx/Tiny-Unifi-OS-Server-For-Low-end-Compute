@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodically re-apply UniFi OS Server container tuning
+
+[Timer]
+OnBootSec=120s
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=uosserver-repair.service
+
+[Install]
+WantedBy=timers.target

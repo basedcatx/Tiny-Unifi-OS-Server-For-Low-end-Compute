@@ -1,0 +1,17 @@
+[Unit]
+Description=Repair UniFi OS Server container after (re)creation
+After=uosserver.service
+Wants=uosserver.service
+
+[Service]
+Type=oneshot
+User=uosserver
+Group=uosserver
+ExecStart=/usr/local/bin/uosserver-repair.sh
+RemainAfterExit=yes
+TimeoutStartSec=15min
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

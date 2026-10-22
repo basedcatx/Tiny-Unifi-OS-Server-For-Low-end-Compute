@@ -1,0 +1,11 @@
+# vendor payloads are large binaries, not source
+payload/
+*.tar.gz
+*.tgz
+*.zip
+*.bundle
+
+# local scratch
+*.log
+*.orig
+.DS_Store

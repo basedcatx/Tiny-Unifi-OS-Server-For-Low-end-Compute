@@ -1,0 +1,7 @@
+{
+  "NETWORK": {
+    "var_lib_unifi": "/var/lib/unifi",
+    "var_lib_mongodb": "/var/lib/mongodb",
+    "etc_rabbitmq_ssl": "/etc/rabbitmq/ssl"
+  }
+}

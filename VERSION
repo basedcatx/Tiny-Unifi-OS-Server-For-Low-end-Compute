@@ -1,0 +1,7 @@
+repo:                tiny-unifi-os-server
+tag:                 v5.1.42
+uos_app_version:     5.1.42
+unifi_core:          5.1.132-uosserver.1
+container_version:   c9603dec9010
+container_image:     docker.io/library/uosserver:c9603dec9010
+validated_on:        Ubuntu 24.04 / 1 GB RAM / 2 vCPU / x86_64 / rootless podman + pasta
