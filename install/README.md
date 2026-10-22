@@ -1,15 +1,13 @@
 # install/
 
-Vendor and host artefacts, kept out of the tuning logic.
-
-| File | Purpose |
-|---|---|
-| `uosserver.service` | host supervisor unit (`uosserver-service`) |
+| File                        | Purpose                                        |
+| --------------------------- | ---------------------------------------------- |
+| `uosserver.service`         | host supervisor unit (`uosserver-service`)     |
 | `uosserver-updater.service` | creates/re-creates the container, runs as root |
-| `uosserver-repair.service` | re-applies tuning after every recreate |
-| `server.conf.tpl` | template for `/var/lib/uosserver/server.conf` |
-| `portmap.json` | container port map (as shipped) |
-| `mounts.json` | persistent bind mounts (as shipped) |
+| `uosserver-repair.service`  | re-applies tuning after every recreate         |
+| `server.conf.tpl`           | template for `/var/lib/uosserver/server.conf`  |
+| `portmap.json`              | container port map (as shipped)                |
+| `mounts.json`               | persistent bind mounts (as shipped)            |
 
 ## Port mapping
 

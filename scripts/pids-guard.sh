@@ -8,7 +8,6 @@
 # leaves almost nothing for java's fork-heavy pre-start hook.  Raise it and
 # keep it raised.
 #
-# Driven by uosserver-pids.timer every 30s.  Cheap: it only reads a glob.
 
 set -u
 
@@ -19,7 +18,7 @@ for f in /sys/fs/cgroup/user.slice/user-"${uid}".slice/user@"${uid}".service/use
     [ -e "$f" ] || continue
     cur=$(cat "$f" 2>/dev/null)
     [ "$cur" = "$PIDS_MAX" ] && continue
-    if echo "$PIDS_MAX" > "$f" 2>/dev/null; then
+    if echo "$PIDS_MAX" >"$f" 2>/dev/null; then
         logger -t uosserver-pids -- "raised pids.max $cur -> $PIDS_MAX ($(dirname "$f"))" 2>/dev/null
     fi
 done

@@ -1,27 +1,25 @@
 # Tuning reference
 
-Every knob that matters, where it lives, and the value for each box size.
-
 ## Knobs
 
-| Knob | File | 1 GB (this build) | 2 GB | 4 GB |
-|---|---|---|---|---|
-| `UV_THREADPOOL_SIZE` | `/etc/default/unifi-core` | **16** | 32 | 64 |
-| node `--max-old-space-size` | `unifi-core.service.d/exec-heap.conf` | **800** | 1200 | 2000 |
-| `MemoryMax` | `unifi-core.service.d/memory.conf` | **1024M** | 2048M | 4096M |
-| `MemorySwapMax` | same | **512M** | 512M | 512M |
-| JVM heap | `/etc/default/unifi` (`-Xmx`) | **384m** | 768m | 1536m |
-| container `pids.max` | host cgroup (runtime) | **2048** | 2048 | 2048 |
-| postgres `max_connections` | `postgresql.conf` | **20** | 40 | 100 |
-| mongo `wiredTigerCacheSizeGB` | `/etc/mongod.conf` | **0.15** | 0.35 | 1.0 |
-| swap | host | **2 GB** | 2 GB | 2 GB |
+| Knob                          | File                                  | 1 GB (this build) | 2 GB  | 4 GB  |
+| ----------------------------- | ------------------------------------- | ----------------- | ----- | ----- |
+| `UV_THREADPOOL_SIZE`          | `/etc/default/unifi-core`             | **16**            | 32    | 64    |
+| node `--max-old-space-size`   | `unifi-core.service.d/exec-heap.conf` | **800**           | 1200  | 2000  |
+| `MemoryMax`                   | `unifi-core.service.d/memory.conf`    | **1024M**         | 2048M | 4096M |
+| `MemorySwapMax`               | same                                  | **512M**          | 512M  | 512M  |
+| JVM heap                      | `/etc/default/unifi` (`-Xmx`)         | **384m**          | 768m  | 1536m |
+| container `pids.max`          | host cgroup (runtime)                 | **2048**          | 2048  | 2048  |
+| postgres `max_connections`    | `postgresql.conf`                     | **20**            | 40    | 100   |
+| mongo `wiredTigerCacheSizeGB` | `/etc/mongod.conf`                    | **0.15**          | 0.35  | 1.0   |
+| swap                          | host                                  | **2 GB**          | 2 GB  | 2 GB  |
 
 Only `UV_THREADPOOL_SIZE`, `pids.max` and `MemoryMax` are hard requirements.
 The rest are comfort.
 
-## Why `UV_THREADPOOL_SIZE` is the important one
+## Why is `UV_THREADPOOL_SIZE` that important
 
-Node's libuv threadpool default is **4**. Ubiquiti ships **256**. Each thread
+Node's libuv threadpool default is **4**. Ubiquiti comes with **256**. Each thread
 costs a pid (and an 8 MB stack, so 2 GB of address space on a 1 GB box).
 
 `pids.max` on this container is **363**. 256 + V8 workers + main = **269**.
@@ -37,7 +35,7 @@ works but still wastes 2 GB of address space.
 
 `--max-old-space-size=300` is the shipped value and it aborts. The bundle's
 module graph needs more than 300 MB of old space during loading. 800 MB is a
-*cap*, not an allocation — real RSS sits at ~250 MB. Raising it costs nothing
+_cap_, not an allocation — real RSS sits at ~250 MB. Raising it costs nothing
 because V8 only commits what it touches.
 
 ## Why the JVM is `-Xmx384m`
@@ -53,14 +51,14 @@ heap. That is fatal next to mongod, postgres, rabbitmq, nginx and node.
 
 ## Where each file lives (and whether it survives)
 
-| Path | Survives container recreate? |
-|---|---|
-| `/data/unifi`, `/data/unifi-core` | **yes** — persistent podman volume |
-| `/etc/default/unifi`, `/etc/default/unifi-core` | no — overlay |
-| `/etc/systemd/system/*.d/*.conf` | no — overlay |
-| `/usr/share/unifi-core` | no — overlay |
-| `/var/lib/uosserver/*` | yes — host |
-| container cgroup `pids.max` | no — recreated with the container |
+| Path                                            | Survives container recreate?       |
+| ----------------------------------------------- | ---------------------------------- |
+| `/data/unifi`, `/data/unifi-core`               | **yes** — persistent podman volume |
+| `/etc/default/unifi`, `/etc/default/unifi-core` | no — overlay                       |
+| `/etc/systemd/system/*.d/*.conf`                | no — overlay                       |
+| `/usr/share/unifi-core`                         | no — overlay                       |
+| `/var/lib/uosserver/*`                          | yes — host                         |
+| container cgroup `pids.max`                     | no — recreated with the container  |
 
 Everything in the "no" column is re-applied by `uosserver-repair.service`.
 
